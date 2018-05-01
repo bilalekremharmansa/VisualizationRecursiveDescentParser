@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualization of Recursive Descent Parser</title>
+    <meta charset="UTF-8">
+    <style>
+    #code {
+        float: left;
+        width: 30%;
+        overflow: hidden;
+    }
+    #visualization {
+        float: left;
+        width: 70%;
+        overflow: hidden;
+    }
+    html, body {
+    width:  100%;
+    height: 100%;
+    margin-left: 5px;
+    }
+    </style>
+
+    <script data-main="scripts/main" src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+</head>
+<body>
+
+<h1>Visualization of Recursive Descent Parser</h1>
+<p>A step by step visualization guide for recursive descent parser.</p>
+<p>
+    In computer science, a recursive descent parser is a kind of top-down parser built from a set of mutually recursive procedures (or a non-recursive equivalent) where 
+    each such procedure usually implements one of the productions of the grammar. Thus the structure of the resulting program closely mirrors that of the grammar it 
+    recognizes.
+</p>
+<p>
+    A predictive parser is a recursive descent parser that does not require backtracking. Predictive parsing is possible only for the class of LL(k) grammars, which are 
+    the context-free grammars for which there exists some positive integer k that allows a recursive descent parser to decide which production to use by examining only 
+    the next k tokens of input. The LL(k) grammars therefore exclude all ambiguous grammars, as well as all grammars that contain left recursion. Any context-free grammar 
+    can be transformed into an equivalent grammar that has no left recursion, but removal of left recursion does not always yield an LL(k) grammar. A predictive parser 
+    runs in linear time.
+</p>
+
+<h3>Instructions</h3>
+<p>
+    -Think an expression to inspect. i.e. 3*5+2<br>
+    -Enter the expression you've just though to input area<br>
+    -Click 'Start'<br>
+    -Visualize the recursive descent parser algorithm with 'Left Arrow' on keyboard<br>
+    -If you want to restart the visualization just click 'Start' again.
+</p>
+
+<div id='starter'> 
+    <input id="inputExpression" type="text"></input>
+    <button id='start'>Start</button>
+</div>
+<div id='visual' style="width: 100%; overflow: hidden; visibility: hidden;">
+        <div id="code"> </div>
+
+        <div id="visualization">
+            <h3>Visualization</h3>
+            <p id="parser"> Input:  </p>
+            <div id='mycanvas' style="width: 100%;height: 100%;">
+           
+            </canvas>
+        </div>
+</div>
+
+
+</body>
+</html>

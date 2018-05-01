@@ -1,5 +1,5 @@
-import {Token, TokenParser} from './Token';
-import { Constant } from './Expression';
+import { Token, TokenParser } from "./Token";
+import { Constant } from "./Expression";
 
 export class Scanner {
     source: string;
