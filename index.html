@@ -15,56 +15,77 @@
         overflow: hidden;
     }
     html, body {
-    width:  100%;
-    height: 100%;
-    margin-left: 5px;
+        width:  99%;
+        height: 100%;
+        padding-left: 5px;
+        padding-right: 5px;
+    }    
+    .token {
+        font-size: x-large;
     }
     </style>
-
     <script data-main="scripts/main" src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
 </head>
 <body>
-
-<h1>Visualization of Recursive Descent Parser</h1>
-<p>A step by step visualization guide for recursive descent parser.</p>
-<p>
-    In computer science, a recursive descent parser is a kind of top-down parser built from a set of mutually recursive procedures (or a non-recursive equivalent) where 
-    each such procedure usually implements one of the productions of the grammar. Thus the structure of the resulting program closely mirrors that of the grammar it 
-    recognizes.
-</p>
-<p>
-    A predictive parser is a recursive descent parser that does not require backtracking. Predictive parsing is possible only for the class of LL(k) grammars, which are 
-    the context-free grammars for which there exists some positive integer k that allows a recursive descent parser to decide which production to use by examining only 
-    the next k tokens of input. The LL(k) grammars therefore exclude all ambiguous grammars, as well as all grammars that contain left recursion. Any context-free grammar 
-    can be transformed into an equivalent grammar that has no left recursion, but removal of left recursion does not always yield an LL(k) grammar. A predictive parser 
-    runs in linear time.
-</p>
-
-<h3>Instructions</h3>
-<p>
-    -Think an expression to inspect. i.e. 3*5+2<br>
-    -Enter the expression you've just though to input area<br>
-    -Click 'Start'<br>
-    -Visualize the recursive descent parser algorithm with 'Left Arrow' on keyboard<br>
-    -If you want to restart the visualization just click 'Start' again.
-</p>
-
-<div id='starter'> 
-    <input id="inputExpression" type="text"></input>
-    <button id='start'>Start</button>
+<header>
+    <h1>Visualization of Recursive Descent Parser</h1>
+</header> 
+<div>
+    <p>A step by step visualization guide for recursive descent parser. Here is a quote about 'Recursive Descent Parser' from <a href="https://en.wikipedia.org/wiki/Recursive_descent_parser">Wikipedia:</a></p>
+        <p><i>
+               "In computer science, a recursive descent parser is a kind of top-down parser built from a set of mutually recursive procedures (or a non-recursive equivalent) where 
+                each such procedure usually implements one of the productions of the grammar. Thus the structure of the resulting program closely mirrors that of the grammar it 
+                recognizes.
+                
+                A predictive parser is a recursive descent parser that does not require backtracking. Predictive parsing is possible only for the class of LL(k) grammars, which are 
+                the context-free grammars for which there exists some positive integer k that allows a recursive descent parser to decide which production to use by examining only 
+                the next k tokens of input. The LL(k) grammars therefore exclude all ambiguous grammars, as well as all grammars that contain left recursion. Any context-free grammar 
+                can be transformed into an equivalent grammar that has no left recursion, but removal of left recursion does not always yield an LL(k) grammar. A predictive parser 
+                runs in linear time."</i>
+            </p>
 </div>
+
+<div>
+    <h3>Instructions</h3>
+    <p>
+        Find an <b>expression</b> to inspect. i.e. (4+3)<br>
+        Enter the expression to input area<br>
+        Visualize the recursive descent parser algorithm with <b>'Right Arrow'</b> on keyboard
+        . Alternatively, click <b>'Next'</b> button.<br>
+    </p>
+</div>
+
+<div>
+    <label><b>Expression</b></label>
+    <input id="input-exp" type="text"></input>
+    <button id='start' style="margin-right: 10px">Start</button>
+    <button id='next' style="margin-bottom: 5px; visibility: hidden;" >Next</button> 
+</div>
+
 <div id='visual' style="width: 100%; overflow: hidden; visibility: hidden;">
-        <div id="code"> </div>
+        <div id="code"></div>
 
         <div id="visualization">
             <h3>Visualization</h3>
-            <p id="parser"> Input:  </p>
-            <div id='mycanvas' style="width: 100%;height: 100%;">
-           
-            </canvas>
+            <div id='token' class='token'>
+                <pre><p id="tok-expression"></p></pre>
+                <pre><p id="pointer"> </p></pre>
+            </div>
+            
+            
+            <div id='canvas-area' style="width: 100%;height: 100%;">
+        
+            </div>
         </div>
 </div>
 
-
+<footer>
+    <p>
+        This page is made by <a href="https://github.com/bilalekremharmansa">Bilal Ekrem HARMANSA</a> under <a href="https://github.com/maeyler/Automata">Formal Languages and Automata Theory</a> course, which is given by 
+                                                            <a href ="https://github.com/maeyler">M. Akif Eyler</a>.
+        If you want to contribute or look into source code of visualization, please, visit my 
+        <a href="https://github.com/bilalekremharmansa/VisualizationRecursiveDescentParser">Github repo</a><br>
+    </p>    
+</footer>
 </body>
 </html>

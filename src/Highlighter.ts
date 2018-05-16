@@ -52,8 +52,8 @@ export class Highlighter {
             let span  = `<span id='${key.toLowerCase()}'>`;
             let spann = `</span>`;
 
-            this.code = this.code.replace('#'+key+'#', span);
-            this.code = this.code.replace('#END'+key+'#', spann);
+            this.code = this.code.replace('#'+key+'#\n', span);
+            this.code = this.code.replace('#END'+key+'#\n', spann);
         }
     }
 }

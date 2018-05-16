@@ -7,6 +7,7 @@ import { Point } from "./Draw";
 
 export class RDPModel {
 
+    expression: string;
     parser: Parser | undefined;
     states: State[];
 
@@ -14,11 +15,12 @@ export class RDPModel {
 
     constructor() {
         this.states = [];
+        this.expression = '';
     }
 
     parse(input: string): void {
         this.states = [];
-
+        this.expression = input;
         this.parser = new Parser(input);
         this.parser.attachModel(this);
         this.parser.parse();

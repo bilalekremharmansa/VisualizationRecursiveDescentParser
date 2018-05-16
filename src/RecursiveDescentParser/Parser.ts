@@ -19,7 +19,9 @@ export class Parser {
     }
 
     match(matchToken: Token) {
-        if(this.tok == matchToken) this.tok = this.lex.nextToken();
+        if(this.tok == matchToken) {
+            this.tok = this.lex.nextToken();
+        }
         else this.expected(matchToken.toString());
     }
     expected(s: string) {
@@ -36,7 +38,20 @@ export class Parser {
     checkPoint(point: Point, status: StateStatus, name: string, region: string,
                                         props?: { [field: string]: string; }) {
         let shape: Shape = new RecursiveFunc(point, name, props);
-        let state:State = new State(status, this.tok, region, shape);
+        let tokenIndex: number;
+        switch (this.tok) {
+            case Token.NUMBER:
+                tokenIndex = Math.floor((this.lex.prev + this.lex.next) / 2);
+                break;
+            case Token.EOF:
+                tokenIndex = this.lex.next;
+                break;
+            default:
+                tokenIndex = this.lex.prev;
+                break;
+        }
+
+        let state:State = new State(status, this.tok, tokenIndex, region, shape);
         if(this.model != undefined) this.model.addState(state);
     }
 
@@ -65,7 +80,7 @@ export class Parser {
     expr(): Expression | undefined {
         let region = 'expression';
         let point = this.takePoint();
-        this.checkPoint(point, StateStatus.DRAW, 'Expression()', region);      
+        this.checkPoint(point, StateStatus.DRAW, 'exp()', region);      
 
         let e: Expression | undefined = this.term();
         
@@ -106,7 +121,7 @@ export class Parser {
     term(): Expression | undefined {
         let region = 'TERM';
         let point = this.takePoint();
-        this.checkPoint(point, StateStatus.DRAW, 'Term()', region);   
+        this.checkPoint(point, StateStatus.DRAW, 'term()', region);   
 
         let e: Expression | undefined = this.factor();
        
@@ -148,35 +163,48 @@ export class Parser {
     factor(): Expression | undefined {
         let region = 'FACTOR';
         let point = this.takePoint();
-        this.checkPoint(point, StateStatus.DRAW, 'Factor()', region); 
-         
+        this.checkPoint(point, StateStatus.DRAW, 'factor()', region); 
+        region='CONSTANT';
         if(this.tok == Token.NUMBER) {
             let c: Expression = new Constant(this.lex.nval);
             
             //#state 
-            region='CONSTANT';
             this.checkPoint(point, StateStatus.DRAW, c.name, region, c.map);
+            
+            region='CONSTANTMATCH';
+            this.checkPoint(point, StateStatus.DRAW, c.name, region, c.map);
+            this.match(Token.NUMBER);
+            
             region='CONSTANTRETURN';
             this.checkPoint(point, StateStatus.ERASE, c.name, region);
-            
-            this.match(Token.NUMBER);
             return c;
         }
+        region='LEFT';
+        this.checkPoint(point, StateStatus.DRAW, 'factor()', region);
         if(this.tok == Token.LEFT) {
+            region='LEFTMATCH';
+            this.checkPoint(point, StateStatus.DRAW, 'factor()', region);
             this.match(Token.LEFT);
+
+            region='FACTOREXP';
+            this.checkPoint(point, StateStatus.DRAW, 'factor()', region);
             let e: Expression | undefined = this.expr();
             
             //#state 
             if(e != undefined) {
-                region='LEFT';
                 this.checkPoint(point, StateStatus.DRAW, e.name, region, e.map);
+
+                region='RIGHTMATCH';
+                this.checkPoint(point, StateStatus.DRAW, e.name, region);
+                this.match(Token.RIGHT);
+
                 region='LEFTRETURN';
                 this.checkPoint(point, StateStatus.ERASE, e.name, region);
             }
-            
-            this.match(Token.RIGHT);
+
             return e;
         }
+
         this.expected("Factor");
     }
 }

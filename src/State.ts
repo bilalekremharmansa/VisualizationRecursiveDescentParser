@@ -6,11 +6,13 @@ export class State {
     status: StateStatus;
     shape: Shape | undefined;
     token: Token;
+    tokenMoved: number;
     region: string;
 
-    constructor(status: StateStatus, tok: Token, region: string, shape?: Shape) {
+    constructor(status: StateStatus, tok: Token, tokenMoved: number, region: string, shape?: Shape) {
         this.status = status;
         this.token = tok;
+        this.tokenMoved = tokenMoved;
         this.shape = shape;
         this.region = region;
     }

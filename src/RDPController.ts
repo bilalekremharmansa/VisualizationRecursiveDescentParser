@@ -4,7 +4,6 @@ import { RDPView } from "./RDPView";
 import { State, StateStatus } from "./State";
 
 export class RDPController {
-    
     model: RDPModel;
     view: RDPView;
 
@@ -20,6 +19,9 @@ export class RDPController {
     reinit(parserInput: string) {
         this.view.reinit();
         this.model.parse(parserInput);
+        this.view.resize();
+
+        this.view.updateExpression(parserInput);
 
         this.stateIndexer = -1;
     }
@@ -50,7 +52,7 @@ export class RDPController {
                     break;
             }
             this.view.highlight(state.region);
-            this.view.updateToken(state.token);
+            this.view.updateToken(state.token, state.tokenMoved);
         }
     }
 

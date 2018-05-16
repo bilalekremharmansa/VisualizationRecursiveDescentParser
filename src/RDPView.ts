@@ -4,13 +4,12 @@ import { Point, Shape } from "./Draw";
 import { Highlighter } from "./Highlighter";
 import { Token } from "./RecursiveDescentParser/Token";
 
-const shapeWidth: number = 300;
+const shapeWidth: number = 150;
 const shapeHeight: number = 150;
 
 
 export class RDPView {
-
-    canvas: HTMLCanvasElement;
+    canvas: HTMLCanvasElement | undefined;
     points: Queue<Point>;
     lastGivenPoint: Point;
 
@@ -20,16 +19,14 @@ export class RDPView {
     HEIGHT_CANVAS: number = 0;
 
     constructor() {
-        const canvasDiv =<HTMLDivElement> document.getElementById('mycanvas');
-        this.WIDTH_CANVAS = window.innerWidth;
-        this.HEIGHT_CANVAS = window.innerHeight;
-
+        const canvasDiv =<HTMLDivElement> document.getElementById('canvas-area');
         this.canvas = document.createElement('canvas');
-        this.canvas.style.width = '100%';
-        this.canvas.style.height = '100%';
-        canvasDiv!.appendChild(this.canvas);
-        
-        this.points = new Queue();
+        /** takePoint() needs to know canvas div's width to give points when
+         * modal needs it.
+         */
+        this.canvas.width = canvasDiv!.clientWidth;
+
+        this.points = new Queue();  
         this.lastGivenPoint = new Point(0,0);
         this.points.push(this.lastGivenPoint);
 
@@ -39,25 +36,33 @@ export class RDPView {
     }
 
     resize() {
-        this.canvas.width=window.innerWidth;
-        this.canvas.height=window.innerHeight;
-    }
+        const canvasDiv =<HTMLDivElement> document.getElementById('canvas-area');
 
-    reinit() {
-        const canvasDiv =<HTMLDivElement> document.getElementById('mycanvas');
+        let points = this.points.arr;
+        let canvasDimensions: Point = new Point(0, 0);
+        for (let index = 0; index < points.length; index++) {
+            const element = points[index];
+            
+            //if(element.x > canvasDimensions.x) canvasDimensions.x = element.x;
+
+            if(element.y > canvasDimensions.y) canvasDimensions.y = element.y;
+        }
+
+        this.canvas = document.createElement('canvas');
+        //this.canvas.width=canvasDimensions.x + shapeWidth;
+        this.canvas.width = canvasDiv!.clientWidth;
+        this.canvas.height=canvasDimensions.y + shapeHeight;
+
         while(canvasDiv.hasChildNodes) {
             let child = canvasDiv.lastChild;
             if(child == null) break;
             canvasDiv.removeChild(child);
         }
-        this.WIDTH_CANVAS = window.innerWidth;
-        this.HEIGHT_CANVAS = window.innerHeight;
 
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = this.WIDTH_CANVAS;
-        this.canvas.height = this.HEIGHT_CANVAS;
-        canvasDiv!.appendChild(this.canvas);
+        canvasDiv.appendChild(this.canvas);
+    }
 
+    reinit() {
         this.points = new Queue();
         this.lastGivenPoint = new Point(0,0);
         this.points.push(this.lastGivenPoint);
@@ -66,7 +71,7 @@ export class RDPView {
         this.highlighter.adjustCode();
         this.updateCode(this.highlighter.code);
 
-        this.updateToken(Token.EMPTY);
+        this.updateToken(Token.EMPTY, 0);
     }
 
     highlight(area: string) {
@@ -93,7 +98,7 @@ export class RDPView {
     }
 
     getContext(): CanvasRenderingContext2D | null {
-        return this.canvas.getContext('2d');
+        return this.canvas!.getContext('2d');
     }
 
     takePoint(): Point {
@@ -101,7 +106,7 @@ export class RDPView {
         if(point == undefined) {
             let x = this.lastGivenPoint.x + shapeWidth;
             let y = this.lastGivenPoint.y;
-            if(x  > this.canvas.height) {
+            if(x + shapeWidth  > this.canvas!.width) {
                 x = 0;
                 y = y + shapeHeight;
             }
@@ -186,12 +191,23 @@ export class RDPView {
 
     eraseShape(shape: Shape) {
         const ctx: CanvasRenderingContext2D | null = this.getContext();
-        ctx!.clearRect(shape.x - 5, shape.y - 5, shapeWidth + 5, shapeHeight + 5);
+        ctx!.clearRect(shape.x - 5, shape.y - 5, 
+                        this.canvas!.width - shape.x + 5, this.canvas!.height - shape.y + 5);
     }
 
-    updateToken(tok: Token) {
-        let docParser = document.getElementById('parser');
-        docParser!.innerHTML = `TOKEN = ${ tok.toString() }`;
+    updateExpression(expression: string) {
+        let expr = document.getElementById('tok-expression');
+        expr!.innerHTML = expression;
+    }
+
+    updateToken(tok: Token, tokIndex: number) {
+        let pointer = document.getElementById('pointer');
+        let blank = '';
+        for (let index = 0; index < tokIndex; index++) {
+            blank += ' ';   
+        }
+        blank += `^ TOKEN = ${ tok.toString() }`;
+        pointer!.innerHTML = blank;
     }
 
     updateCode(code: string) {
@@ -201,64 +217,70 @@ export class RDPView {
 }
 
 const _code = `<h3>Code</h3>
-<pre><code>
+<pre>
 Expression expr() {
-    #EXPRESSION#
-    Expression e = term();
-    #ENDEXPRESSION#
-    Token t = tok;
-    #PLUSMINUS#
-    while (t == Token.PLUS || t == Token.MINUS)  {
-        match(t);
-        e = new Binary(e, t, term());
-        t = tok;
-    }
-    #ENDPLUSMINUS#
-    #EXPRETURN#
-    return e;
-    #ENDEXPRETURN#
+#EXPRESSION#
+&emsp;&emsp;Expression e = term();
+#ENDEXPRESSION#
+&emsp;&emsp;Token t = tok;
+#PLUSMINUS#
+&emsp;&emsp;while (t == Token.PLUS || t == Token.MINUS)  {
+&emsp;&emsp;&emsp;&emsp;match(t);
+&emsp;&emsp;&emsp;&emsp;e = new Binary(e, t, term());
+&emsp;&emsp;&emsp;&emsp;t = tok;
+&emsp;&emsp;}
+#ENDPLUSMINUS#
+#EXPRETURN#
+&emsp;&emsp;return e;
+#ENDEXPRETURN#
 }
 Expression term() {
-    #TERM#
-    Expression e = factor();
-    #ENDTERM#
-    Token t = tok;
-    #STARSLASH#
-    while (t == Token.STAR || t == Token.SLASH)  {
-        match(t);
-        e = new Binary(e, t, factor());
-        t = tok;
-    }
-    #ENDSTARSLASH#
-    #TERMRETURN#
-    return e;
-    #ENDTERMRETURN#
+#TERM#
+&emsp;&emsp;Expression e = factor();
+#ENDTERM#
+&emsp;&emsp;Token t = tok;
+#STARSLASH#
+&emsp;&emsp;while (t == Token.STAR || t == Token.SLASH)  {
+&emsp;&emsp;&emsp;&emsp;match(t);
+&emsp;&emsp;&emsp;&emsp;e = new Binary(e, t, factor());
+&emsp;&emsp;&emsp;&emsp;t = tok;
+&emsp;&emsp;}
+#ENDSTARSLASH#
+#TERMRETURN#
+&emsp;&emsp;return e;
+#ENDTERMRETURN#
 }
 Expression factor() {
-    #FACTOR#
-
-    if (tok == Token.NUMBER)  {
-        #CONSTANT#
-        Expression c = new Constant(lex.nval);
-        match(Token.NUMBER);
-        #ENDCONSTANT#
-        #CONSTANTRETURN#
-        return c;
-        #ENDCONSTANTRETURN#
-    }
-    if (tok == Token.LEFT)  {
-        #LEFT#
-        match(Token.LEFT);
-        Expression e = expr();
-        match(Token.RIGHT);
-        #ENDLEFT#
-        #LEFTRETURN#
-        return e;
-        #ENDLEFTRETURN#
-    }
-
-    #ENDFACTOR#
-    expected("Factor");
-    return null;
+#FACTOR#
+&emsp;&emsp;if (tok == Token.NUMBER)  {
+#CONSTANT#
+&emsp;&emsp;&emsp;&emsp;Expression c = new Constant(lex.nval);
+#ENDCONSTANT#
+#CONSTANTMATCH#
+&emsp;&emsp;&emsp;&emsp;match(Token.NUMBER);
+#ENDCONSTANTMATCH#
+#CONSTANTRETURN#
+&emsp;&emsp;&emsp;&emsp;return c;
+#ENDCONSTANTRETURN#
+&emsp;&emsp;}
+&emsp;&emsp;if (tok == Token.LEFT)  {
+#LEFT#
+#LEFTMATCH#
+&emsp;&emsp;&emsp;&emsp;match(Token.LEFT);
+#ENDLEFTMATCH#
+#FACTOREXP#
+&emsp;&emsp;&emsp;&emsp;Expression e = expr();
+#ENDFACTOREXP#
+#RIGHTMATCH#
+&emsp;&emsp;&emsp;&emsp;match(Token.RIGHT);
+#ENDRIGHTMATCH#
+#ENDLEFT#
+#LEFTRETURN#
+&emsp;&emsp;&emsp;&emsp;return e;
+#ENDLEFTRETURN#
+&emsp;&emsp;}
+#ENDFACTOR#
+&emsp;&emsp;expected("Factor");
+&emsp;&emsp;return null;
 }
-</code></pre>`;
+</pre>`;

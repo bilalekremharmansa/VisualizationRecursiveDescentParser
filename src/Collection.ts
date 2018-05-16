@@ -4,6 +4,7 @@
  */
 export interface Collection<T> {
     arr: T[];
+    length: number;
     push(value: T): void;
     pop():T | undefined;
     peek(): T | undefined;
@@ -11,16 +12,19 @@ export interface Collection<T> {
 }
 export class Stack<T> implements Collection<T> {
     arr: T[];
+    length = 0;
 
     constructor() {
         this.arr = [];
     }
 
-    public push(value: T) {
+    push(value: T) {
         this.arr.push(value);
+        this.length = this.arr.length;
     }
 
     pop(): T | undefined {
+        this.length = this.arr.length;
         return this.arr.pop();
     }
 
@@ -34,6 +38,7 @@ export class Stack<T> implements Collection<T> {
 }
 export class Queue<T> {
     arr: T[];
+    length = 0;
 
     constructor() {
         this.arr = [];
@@ -41,16 +46,20 @@ export class Queue<T> {
 
     push(value: T) {
         this.arr.push(value);
+        this.length = this.arr.length;
     }
 
     pushPriority(value: T) {
         this.arr.splice(0, 0, value);
+        this.length = this.arr.length;
     }
 
     /** pops and returns first element in array */
     pop(): T | undefined {
+        if(this.isEmpty()) return undefined;
         let element = this.arr[0];
         this.arr.splice(0, 1);
+        this.length = this.arr.length;
         return element;
     }
     peek(): T | undefined {

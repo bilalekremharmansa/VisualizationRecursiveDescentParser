@@ -23,27 +23,27 @@ export class Scanner {
     getNumber() {
         while (this.next < this.source.length) {
             let c:string = this.source.charAt(this.next);
-            if (c=='.' || this.isDigit(c)) this.next++;
+            if (c=='.' || Scanner.isDigit(c)) this.next++;
             else break;
         }
         this.tok = Token.NUMBER; 
         let s: string = this.source.substring(this.prev, this.next);
         this.nval = parseFloat(s);
     }
-    isDigit(character: string): boolean{
+    static isDigit(character: string): boolean{
         return character.length === 1 && /^\d+$/.test(character);
     }
 
     getIdent() {
         while (this.next < this.source.length) {
             let c: string = this.source.charAt(this.next);
-            if (this.isLetter(c) || this.isDigit(c)) this.next++;
+            if (Scanner.isLetter(c) || Scanner.isDigit(c)) this.next++;
             else break;
         }
         this.sval = this.source.substring(this.prev, this.next);
         this.tok = Token.IDENT;
     }
-    isLetter(character: string): boolean {
+    static isLetter(character: string): boolean {
         return character.length === 1 && /[a-z]/i.test(character);
     }
 
@@ -55,14 +55,14 @@ export class Scanner {
         do {
         if (this.next >= this.source.length) return (this.tok = Token.EOF);
             c = this.source.charAt(this.next++);  //read next char
-        } while (this.isWhiteSpace(c));
+        } while (Scanner.isWhiteSpace(c));
         this.prev = this.next-1;
-        if (this.isLetter(c)) this.getIdent();
-        else if (this.isDigit(c)) this.getNumber();
+        if (Scanner.isLetter(c)) this.getIdent();
+        else if (Scanner.isDigit(c)) this.getNumber();
         else this.tok = TokenParser.valueOf(c);  //tok = c;
         return this.tok;
     }
-    isWhiteSpace(character: string): boolean {
+    static isWhiteSpace(character: string): boolean {
         return character.length === 1 && /\s/.test(character);
     }
 
