@@ -70,8 +70,6 @@ export class RDPView {
         this.highlighter = new Highlighter(_code);
         this.highlighter.adjustCode();
         this.updateCode(this.highlighter.code);
-
-        this.updateToken(Token.EMPTY, 0);
     }
 
     highlight(area: string) {
@@ -197,13 +195,13 @@ export class RDPView {
 
     updateExpression(expression: string) {
         let expr = document.getElementById('tok-expression');
-        expr!.innerHTML = expression;
+        expr!.innerHTML = ' ' + expression;
     }
 
     updateToken(tok: Token, tokIndex: number) {
         let pointer = document.getElementById('pointer');
         let blank = '';
-        for (let index = 0; index < tokIndex; index++) {
+        for (let index = -1; index < tokIndex; index++) {
             blank += ' ';   
         }
         blank += `^ TOKEN = ${ tok.toString() }`;
@@ -217,7 +215,7 @@ export class RDPView {
 }
 
 const _code = `<h3>Code</h3>
-<pre>
+<pre style="display: inline-block">
 Expression expr() {
 #EXPRESSION#
 &emsp;&emsp;Expression e = term();

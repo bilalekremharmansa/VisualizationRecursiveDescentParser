@@ -6,12 +6,12 @@
     <style>
     #code {
         float: left;
-        width: 30%;
+        width: 425px;
         overflow: hidden;
     }
     #visualization {
         float: left;
-        width: 70%;
+        width: calc(100% - 450px);
         overflow: hidden;
     }
     html, body {
@@ -55,7 +55,7 @@
     </p>
 </div>
 
-<div>
+<div id = "form">
     <label><b>Expression</b></label>
     <input id="input-exp" type="text"></input>
     <button id='start' style="margin-right: 10px">Start</button>
@@ -63,7 +63,7 @@
 </div>
 
 <div id='visual' style="width: 100%; overflow: hidden; visibility: hidden;">
-        <div id="code"></div>
+        <div id="code" ></div>
 
         <div id="visualization">
             <h3>Visualization</h3>

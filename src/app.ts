@@ -6,7 +6,7 @@ const view = new RDPView();
 const model = new RDPModel();
 const controller = new RDPController(model, view);
 
-(<HTMLInputElement>document.getElementById("input-exp"))!.value = '(4+3)';
+(<HTMLInputElement>document.getElementById("input-exp"))!.value = '44 + 33';
 
 function start () {
     try{
@@ -16,6 +16,7 @@ function start () {
         document.getElementById('visual')!.style.visibility='visible';
         document.getElementById('next')!.style.visibility='visible';
         
+        document.location.href = '#form';
     }catch(e){
         document.getElementById('visual')!.style.visibility='hidden';
         document.getElementById('next')!.style.visibility='hidden';

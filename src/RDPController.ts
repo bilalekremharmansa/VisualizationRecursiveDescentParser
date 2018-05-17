@@ -2,6 +2,7 @@ import { Point } from "./Draw";
 import { RDPModel } from "./RDPModel";
 import { RDPView } from "./RDPView";
 import { State, StateStatus } from "./State";
+import { Token } from "./RecursiveDescentParser/Token";
 
 export class RDPController {
     model: RDPModel;
@@ -22,6 +23,7 @@ export class RDPController {
         this.view.resize();
 
         this.view.updateExpression(parserInput);
+        this.view.updateToken(Token.EMPTY, -1);
 
         this.stateIndexer = -1;
     }
